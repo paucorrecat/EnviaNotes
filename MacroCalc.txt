@@ -2,6 +2,10 @@ REM  *****  BASIC  *****
 
 Sub Main
 
+End Sub
+
+
+Sub ExportFilteredRowsAndColumns()
     Dim oDoc As Object
     Dim oSheet As Object
     Dim iRow As Integer
@@ -12,33 +16,14 @@ Sub Main
     Dim sColHeader As String
     Dim nLastCol As Integer
     Dim nLastRow As Integer
-    Dim sFileExpPath As String
-    Dim sFolderPath As String
-	Dim sTimeStamp As String
-	
+
     ' Obté el document i el full actiu
     oDoc = ThisComponent
     oSheet = oDoc.CurrentController.ActiveSheet
 
-    sFilePath = oDoc.URL
-    If sFilePath <> "" Then
-    	sFilePath = ConvertFromURL(sFilePath)
-      	' Extreu la carpeta del camí complet
-      	    ' Extreu la carpeta amb Split
-		    Dim aParts() As String
-    		aParts = Split(sFilePath, "/") ' Divideix el camí per cada "/"
-    		ReDim Preserve aParts(UBound(aParts) - 1) ' Elimina l'última part (el fitxer)
-    		sFolderPath = Join(aParts, "/") ' Torna a unir les parts restants
-    		'MsgBox "La carpeta del document és: " & sFolderPath
-    	Else
-    		MsgBox "El document no està desat.Es deixarà a /home/pau/Documents"
-    		sFolderPath = "/home/pau/Documents"
-	End If
-  
     ' Configura el fitxer de sortida
-    ' antic sFilePatExph = "file:///home/pau/Documents/output.txt" ' Modifica el camí del fitxer aquí
-    sTimeStamp = Year(Now) & Right("0" & Month(Now), 2) & Right("0" & Day(Now), 2)  & " " & Right("0" & Hour(Now), 2) &  Right("0" & Minute(Now), 2) &  Right("0" & Second(Now), 2)
-	sFileExpPath = "file://" & sFolderPath & "/" & oSheet.Name  & " " & sTimeStamp  & ".txt" 'Modifica el camí del fitxer aquí
+    sFilePath = "file:///home/pau/Documents/output.txt" ' Modifica el camí del fitxer aquí
+
     ' Obté l'última fila i columna amb dades
     Dim oRange As Object
     oRange = oSheet.getCellRangeByName("A1:Z1000") ' Modifica el rang segons les teves necessitats
@@ -50,33 +35,27 @@ Sub Main
     sContent = ""
 
     ' Itera per les files des de la 5 fins que B<fila> estigui en blanc
-	iRow =  9 
-	
-	While  "" <> oSheet.getCellByPosition(0, iRow).String  'A10, A11, ... és on hi ha el número d'alumne
+    For iRow = 5 To nLastRow
         sRowValue = oSheet.getCellByPosition(1, iRow).String ' Columna B
+        If Trim(sRowValue) = "" Then Exit For ' Si B<fila> està buit, surt del bucle
 
-        If sRowValue <> "" Then ' Només si B<fila> no està en blanc
+        If oSheet.getCellByPosition(0, iRow).String = "S" Then ' Només si A<fila> és "S"
             Dim sLine As String
             sLine = ""
 
             ' Itera per les columnes i selecciona les que tenen S a la fila 3
-            iCol = 0
-            While  oSheet.getCellByPosition(iCol, 50).Formula <>"" or iCol < 11
-            
-                sColHeader = oSheet.getCellByPosition(iCol, 3).String ' Fila 3
-                If sColHeader <> "" Then
+            For iCol = 0 To nLastCol
+                sColHeader = oSheet.getCellByPosition(iCol, 2).String ' Fila 3
+                If sColHeader = "S" Then
                     sLine = sLine & oSheet.getCellByPosition(iCol, iRow).String & ";"
                 End If
-                iCol = iCol + 1
-            Wend
+            Next iCol
 
             ' Treu el punt i coma final
             If Len(sLine) > 0 Then sLine = Left(sLine, Len(sLine) - 1)
             sContent = sContent & sLine & Chr(10)
         End If
-        iRow = iRow + 1
-    Wend
-    If Len(sContent) > 0 Then sContent = Left(sContent, Len(sContent) - 1) ' Trec el canvi de linia final
+    Next iRow
 
     ' Escriu el contingut al fitxer com a text pla
     Dim oSimpleFileAccess As Object
@@ -88,11 +67,111 @@ Sub Main
     ' Escriu el contingut al fitxer
     Dim oTextStream As Object
     oTextStream = CreateUnoService("com.sun.star.io.TextOutputStream")
-    oTextStream.setOutputStream(oSimpleFileAccess.OpenFileWrite(sFileExpPath))
+    oTextStream.setOutputStream(oSimpleFileAccess.OpenFileWrite(sFilePath))
     oTextStream.setEncoding("UTF-8")
     oTextStream.writeString(sContent)
     oTextStream.closeOutput()
 
-    MsgBox "Exportació completada: " & sFileExpPath
+    MsgBox "Exportació completada: " & sFilePath
+End Sub
+
+
+Sub ExportNotes()
+    Dim oDoc As Object
+    Dim oSheet As Object
+    Dim iRow As Integer
+    Dim iCol As Integer
+    Dim sOutput As String
+    Dim sFilePath As String
+    Dim sRowValue As String
+    Dim sColHeader As String
+    Dim nLastCol As Integer
+    Dim nLastRow As Integer
+
+    ' Obté el document i el full actiu
+    oDoc = ThisComponent
+    oSheet = oDoc.CurrentController.ActiveSheet
+
+    ' Configura el fitxer de sortida
+    sFilePath = "file:///home/pau/Documents/output.txt" ' Modifica el camí del fitxer aquí
+
+    ' Obté l'última fila i columna amb dades
+    Dim oRange As Object
+    oRange = oSheet.getCellRangeByName("A1:Z1000") ' Modifica el rang segons les teves necessitats
+    nLastRow = oRange.Rows.getCount() - 1
+    nLastCol = oRange.Columns.getCount() - 1
+
+    ' Prepara el contingut per escriure al fitxer
+    Dim sContent As String
+    sContent = ""
+
+    ' Itera per les files des de la 5 fins que B<fila> estigui en blanc
+    For iRow = 5 To nLastRow
+        sRowValue = oSheet.getCellByPosition(1, iRow).String ' Columna B
+        If Trim(sRowValue) = "" Then Exit For ' Si B<fila> està buit, surt del bucle
+
+        If oSheet.getCellByPosition(0, iRow).String = "S" Then ' Només si A<fila> és "S"
+            Dim sLine As String
+            sLine = ""
+
+            ' Itera per les columnes i selecciona les que tenen S a la fila 3
+            For iCol = 0 To nLastCol
+                = oSheet.getCellByPosition(iCol, 2).String ' Fila 3
+                If sColHeader = "S" Then
+                    sLine = sLine & oSheet.getCellByPosition(iCol, iRow).String & ";"
+                End If
+            Next iCol
+
+            ' Treu el punt i coma final
+            If Len(sLine) > 0 Then sLine = Left(sLine, Len(sLine) - 1)
+            sContent = sContent & sLine & Chr(10)
+        End If
+    Next iRow
+
+    ' Escriu el contingut al fitxer com a text pla
+    Dim oSimpleFileAccess As Object
+    oSimpleFileAccess = CreateUnoService("com.sun.star.ucb.SimpleFileAccess")
+
+    ' Si el fitxer ja existeix, esborra'l
+'    If oSimpleFileAccess.Exists(sFilePath) Then oSimpleFileAccess.deleteFile(sFilePath)
+
+    ' Escriu el contingut al fitxer
+    Dim oTextStream As Object
+    oTextStream = CreateUnoService("com.sun.star.io.TextOutputStream")
+    oTextStream.setOutputStream(oSimpleFileAccess.OpenFileWrite(sFilePath))
+    oTextStream.setEncoding("UTF-8")
+    oTextStream.writeString(sContent)
+    oTextStream.closeOutput()
+
+    MsgBox "Exportació completada: " & sFilePath
+End Sub
+
+
+
+
+Sub ProvaPau()
+    Dim oDoc As Object
+    Dim oSheet As Object
+    Dim iRow As Integer
+    Dim iCol As Integer
+    Dim sOutput As String
+    Dim sFilePath As String
+    Dim sRowValue As String
+    Dim sColHeader As String
+    Dim nLastCol As Integer
+    Dim nLastRow As Integer
+
+    ' Obté el document i el full actiu
+    oDoc = ThisComponent
+    oSheet = oDoc.CurrentController.ActiveSheet
+
+
+    ' Obté l'última fila i columna amb dades
+
+        sRowValue = oSheet.getCellByPosition(1, 4).String 
+
+        sRowValue = oSheet.getCellByPosition(1, 5).String 
+        sRowValue = oSheet.getCellByPosition(1, 6).String 
 
 End Sub
+

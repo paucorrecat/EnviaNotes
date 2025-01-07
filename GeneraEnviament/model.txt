@@ -1,0 +1,4 @@
+{adreca}
+Missatge per a {nom}
+Benvolgut {nom},
+El teu pes és {pes} i l'altura {nota1}, i l'altra: {nota2}
