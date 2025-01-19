@@ -21,10 +21,20 @@
 
 #include <SmtpMime>
 
+#include "envGenerador.h"
+#include "envModel.h"
+#include "msgDades.h"
+#include "msgPers.h"
+
+
 namespace Ui {
     class SendEmail;
 }
 
+/**
+ * @class SendEmail
+ * @brief Classe que gestiona l'enviament d'emails mitjançant una interfície Qt. *
+ */
 class SendEmail : public QWidget
 {
     Q_OBJECT
@@ -35,10 +45,44 @@ public:
 
     static EmailAddress stringToEmail(const QString & str);
 
-private slots:
-    void on_addAttachment_clicked();
+    envGenerador generador;
 
-    void on_sendEmail_clicked();
+    QList<msgPers> personalitzacions;
+    /*@brief És un índex al missatge personalitzat que s'està veient
+     * Va des de 0 fins a personalitzacions.size()
+     */
+    int persActual;
+
+    /*@brief Mètode que actualitza les dades que es veuen a pantalla
+     */
+    void ActualitzaUi();
+
+
+private slots:
+
+    /*@brief Mètode que adjunta un arxiu a tots els missatges
+     */
+    void addAttachment();
+    /*@brief Mètode fa l'enviament de tots els missatges
+     */
+    void fesEnviament();
+
+
+    //*@brief Mètode que crida al lector del fitxer .csv que té les dades
+    //  */
+    void llegeixDades();
+
+    // /*@brief Mètode que crida al lector del fitxer .txt que és el model
+    //  */
+    void llegeixModel();
+
+    // /*@brief Incrementa el comptador que diu quin missatge personalitzat s'està mostrant
+    //  */
+    void missatgeSeg();
+
+    // /*@brief Decrementa el comptador que diu quin missatge personalitzat s'està mostrant
+    //  */
+    void missatgeAnt();
 
 private:
     Ui::SendEmail *ui;

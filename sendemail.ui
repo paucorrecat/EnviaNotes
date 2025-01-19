@@ -6,42 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1610</width>
-    <height>932</height>
+    <width>773</width>
+    <height>753</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>12</y>
-     <width>694</width>
-     <height>521</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
-     <widget class="QLabel" name="label_7">
-      <property name="font">
-       <font>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Mime E-mail</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>770</x>
-     <y>160</y>
+     <x>0</x>
+     <y>0</y>
      <width>721</width>
      <height>731</height>
     </rect>
@@ -52,7 +28,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -119,7 +95,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -210,7 +186,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -244,7 +220,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -302,27 +278,30 @@
       <x>10</x>
       <y>230</y>
       <width>701</width>
-      <height>441</height>
+      <height>461</height>
      </rect>
+    </property>
+    <property name="currentIndex">
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
-      <string>Tab 1</string>
+      <string>Model</string>
      </attribute>
-     <widget class="QPushButton" name="cmdLlegeixModel">
+     <widget class="QPushButton" name="cmdLlegeixDades">
       <property name="geometry">
        <rect>
         <x>7</x>
         <y>3</y>
-        <width>88</width>
+        <width>121</width>
         <height>25</height>
        </rect>
       </property>
       <property name="text">
-       <string>Carrega Model</string>
+       <string>Carrega Dades</string>
       </property>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -356,7 +335,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -396,18 +375,138 @@
         <x>0</x>
         <y>100</y>
         <width>692</width>
-        <height>251</height>
+        <height>321</height>
        </rect>
       </property>
       <property name="textInteractionFlags">
        <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextEditable|Qt::TextEditorInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
       </property>
      </widget>
+     <widget class="QPushButton" name="cmdLlegeixModel">
+      <property name="geometry">
+       <rect>
+        <x>136</x>
+        <y>3</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Carrega Model</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
-      <string>Tab 2</string>
+      <string>Missatges</string>
      </attribute>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>35</y>
+        <width>692</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>81</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Recipients:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="recipients_2"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>70</y>
+        <width>692</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QLabel" name="label_12">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>81</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Subject:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="subject_2"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QTextEdit" name="texteditor_2">
+      <property name="geometry">
+       <rect>
+        <x>2</x>
+        <y>105</y>
+        <width>692</width>
+        <height>321</height>
+       </rect>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextEditable|Qt::TextEditorInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cmdAnt">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>5</y>
+        <width>81</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&lt;</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="cmdSeg">
+      <property name="geometry">
+       <rect>
+        <x>98</x>
+        <y>5</y>
+        <width>81</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>&gt;</string>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QPushButton" name="sendEmail">

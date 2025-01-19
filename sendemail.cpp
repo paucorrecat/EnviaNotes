@@ -23,12 +23,14 @@
 
 #include <iostream>
 
+
 #include "smtp_params.h"
 
 using namespace std;
 
 SendEmail::SendEmail(QWidget *parent) :
     QWidget(parent),
+    generador(""),
     ui(new Ui::SendEmail)
 {
     ui->setupUi(this);
@@ -41,7 +43,13 @@ SendEmail::SendEmail(QWidget *parent) :
     ui->password->setText(SENDER_PASSWORD);
 
     ui->sender->setText(QString(SENDER_NAME) + "<" + SENDER_EMAIL + ">");
-    ui->recipients->setText(QString(RECIPIENT_NAME) + "<" + RECIPIENT_EMAIL + ">");
+    // ui->recipients->setText(QString(RECIPIENT_NAME) + "<" + RECIPIENT_EMAIL + ">");
+
+    // Connecta els botons als seus slots
+    connect(ui->cmdLlegeixDades, &QPushButton::clicked, this, &SendEmail::llegeixDades);
+    connect(ui->cmdLlegeixModel, &QPushButton::clicked, this, &SendEmail::llegeixModel);
+    connect(ui->cmdAnt, &QPushButton::clicked, this, &SendEmail::missatgeAnt);
+    connect(ui->cmdSeg, &QPushButton::clicked, this, &SendEmail::missatgeSeg);
 }
 
 SendEmail::~SendEmail()
@@ -66,7 +74,7 @@ EmailAddress SendEmail::stringToEmail(const QString &str)
 
 }
 
-void SendEmail::on_addAttachment_clicked()
+void SendEmail::addAttachment()
 {
     QFileDialog dialog(this);
     dialog.setFileMode(QFileDialog::ExistingFiles);
@@ -75,7 +83,7 @@ void SendEmail::on_addAttachment_clicked()
         ui->attachments->addItems(dialog.selectedFiles());
 }
 
-void SendEmail::on_sendEmail_clicked()
+void SendEmail::fesEnviament()
 {
     QString host = ui->host->text();
     int port = ui->port->value();
@@ -87,6 +95,8 @@ void SendEmail::on_sendEmail_clicked()
     EmailAddress sender = stringToEmail(ui->sender->text());
 
     QStringList rcptStringList = ui->recipients->text().split(';');
+
+
 
     QString subject = ui->subject->text();
     QString html = ui->texteditor->toHtml();
@@ -154,6 +164,7 @@ void SendEmail::on_sendEmail_clicked()
     }
 }
 
+
 void SendEmail::errorMessage(const QString &message)
 {
     QErrorMessage err (this);
@@ -161,4 +172,91 @@ void SendEmail::errorMessage(const QString &message)
     err.showMessage(message);
 
     err.exec();
+}
+
+
+// Mètode que crida al lector del fitxer .csv que té les dades
+void SendEmail::llegeixDades() {
+    // Obrir un diàleg per seleccionar el fitxer CSV
+    QString filePath = QFileDialog::getOpenFileName(this,
+                                                    tr("Selecciona un fitxer CSV"),
+                                                    QString(),
+                                                    tr("Fitxers CSV (*.csv)"));
+
+    // Si no s'ha seleccionat cap fitxer, sortir
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    try {
+        // Cridar el mètode de l'objecte generador per llegir les dades
+        generador.llegeixDades(filePath);
+        if (generador.totOk()) {
+            generador.genera();
+            persActual = 0; // Poso l'index de personalitzaciona a 0
+            personalitzacions = generador.missatges;
+            ActualitzaUi();
+        }
+        persActual = 0; // Poso l'index de personalitzaciona a 0
+        personalitzacions = generador.missatges;
+        ActualitzaUi();
+        QMessageBox::information(this, tr("Dades carregades"),
+                                 tr("Les dades del fitxer han estat carregades correctament."));
+    } catch (const std::exception &e) {
+        // Mostrar un error en cas d'excepció
+        errorMessage(tr("Error en carregar les dades: %1").arg(e.what()));
+    }
+}
+
+// Mètode que crida al lector del fitxer .txt que és el model
+void SendEmail::llegeixModel() {
+    // Obrir un diàleg per seleccionar el fitxer de model
+    QString filePath = QFileDialog::getOpenFileName(this,
+                                                    tr("Selecciona un fitxer de model"),
+                                                    QString(),
+                                                    tr("Fitxers de model (*.txt)"));
+
+    // Si no s'ha seleccionat cap fitxer, sortir
+    if (filePath.isEmpty()) {
+        return;
+    }
+
+    try {
+        // Crear un nou model a partir del fitxer seleccionat
+        envModel nouModel(filePath);
+
+        // Assignar el model a l'objecte generador
+        generador.model = nouModel;
+        QMessageBox::information(this, tr("Model carregat"),
+                                 tr("El model del fitxer ha estat carregat correctament."));
+        ui->subject->setText(nouModel.assumpteTemplate);
+        ui->texteditor->setText(nouModel.contingutTemplate);
+        ui->recipients->setText(nouModel.destinatariTemplate);
+    } catch (const std::exception &e) {
+        // Mostrar un error en cas d'excepció
+        errorMessage(tr("Error en carregar el model: %1").arg(e.what()));
+    }
+}
+
+void SendEmail::ActualitzaUi() {
+    ui->subject->setText(generador.model.assumpteTemplate);
+    ui->texteditor->setText(generador.model.contingutTemplate);
+    ui->recipients->setText(generador.model.destinatariTemplate);
+
+    ui->subject_2->setText(personalitzacions[persActual].assumpte);
+    ui->texteditor_2->setText(personalitzacions[persActual].contingut);
+    ui->recipients_2->setText(personalitzacions[persActual].destinartari);
+}
+
+void SendEmail::missatgeSeg() {
+    if (persActual<personalitzacions.size()-1 ) {
+        persActual++;
+        ActualitzaUi();
+    }
+}
+void SendEmail::missatgeAnt() {
+    if (persActual>0) {
+        persActual--;
+        ActualitzaUi();
+    }
 }

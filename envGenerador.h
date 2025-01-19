@@ -7,6 +7,9 @@
 #include <QTextStream>
 #include "msgDades.h"
 #include "envModel.h"
+#include "msgPers.h"
+
+#define SORTIDA_LOG "log_sortida.csv"
 
 /**
  * @class envGenerador
@@ -21,12 +24,41 @@ public:
     /**
      * @brief Llista de dades de personalització carregades des d'un fitxer CSV.
      */
-    QList<msgDades> personalitzacions;
+    QList<msgDades> dadesCombinacio;
+    /**
+     * @brief Comprova si hi ha dades carregades.
+     * @return Cert si hi ha dades carregades; fals en cas contrari.
+     */
+    bool HiHaDades() const;
+
+    /**
+     * @brief Llista de missatges personalitzats.
+     *
+     * Només la part personalitzada:
+     * Assumpte, Destinatari i Contingut
+     * A envGenerador s'hi guarda la versió original. Normalment aquesta copia passarà
+     * al gestor d'enviaments on es podrà editar
+     *
+     */
+    QList<msgPers> missatges;
+
 
     /**
      * @brief model de plantilla utilitzat per generar els emails.
      */
     envModel model;
+
+    /**
+     * @brief Comprova si hi ha un model carregat.
+     * @return Cert si hi ha un model carregat; fals en cas contrari.
+     */
+    bool HiHaModel() const;
+
+    /**
+     * @brief Si és plenament funcional.
+     * @return Cert si hi ha un model carregat i dades carregades; fals en cas contrari.
+     */
+    bool totOk() const;
 
     /**
      * @brief Constructor que inicialitza el model de plantilla.
@@ -54,9 +86,12 @@ public:
      * utilitzant el model de plantilla i les dades carregades, i escriu el resultat
      * en un fitxer CSV de sortida.
      *
+     *Si no se li passa cap paràmetre, la sortida és a SORTIDA_LOG, un #define d'aquesta capçalera
+     *
      * @param outputFilePath Ruta del fitxer on es guardarà la sortida generada.
      */
     void genera(const QString& outputFilePath);
+    void genera();
 };
 
 #endif // ENV_GENERADOR_H

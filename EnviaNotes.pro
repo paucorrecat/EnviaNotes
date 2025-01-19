@@ -13,6 +13,9 @@ TEMPLATE = app
 
 SOURCES += \
     EnviaNotes.cpp \
+    envGenerador.cpp \
+    envModel.cpp \
+    msgDades.cpp \
     sendemail.cpp
 
 # Location of SMTP Library
@@ -26,6 +29,10 @@ INCLUDEPATH += $$SMTP_LIBRARY_LOCATION/../include/smtpmime
 DEPENDPATH += $$SMTP_LIBRARY_LOCATION
 
 HEADERS += \
+    envGenerador.h \
+    envModel.h \
+    msgDades.h \
+    msgPers.h \
     sendemail.h
 
 FORMS += \
