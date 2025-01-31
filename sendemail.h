@@ -63,6 +63,7 @@ private slots:
     /*@brief Mètode que adjunta un arxiu a tots els missatges
      */
     void addAttachment();
+
     /*@brief Mètode fa l'enviament de tots els missatges
      */
     void fesEnviament();

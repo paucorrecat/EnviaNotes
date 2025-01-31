@@ -48,6 +48,7 @@ SendEmail::SendEmail(QWidget *parent) :
     // Connecta els botons als seus slots
     connect(ui->cmdLlegeixDades, &QPushButton::clicked, this, &SendEmail::llegeixDades);
     connect(ui->cmdLlegeixModel, &QPushButton::clicked, this, &SendEmail::llegeixModel);
+    connect(ui->sendEmail, &QPushButton::clicked, this, &SendEmail::fesEnviament);
     connect(ui->cmdAnt, &QPushButton::clicked, this, &SendEmail::missatgeAnt);
     connect(ui->cmdSeg, &QPushButton::clicked, this, &SendEmail::missatgeSeg);
 }
@@ -92,76 +93,78 @@ void SendEmail::fesEnviament()
     QString user = ui->username->text();
     QString password = ui->password->text();
 
+    int Ndest;
+
     EmailAddress sender = stringToEmail(ui->sender->text());
-
-    QStringList rcptStringList = ui->recipients->text().split(';');
-
-
-
-    QString subject = ui->subject->text();
-    QString html = ui->texteditor->toHtml();
 
     SmtpClient smtp (host, port, ssl ? SmtpClient::SslConnection : SmtpClient::TcpConnection);
 
-    MimeMessage message;
 
-    message.setSender(sender);
-    message.setSubject(subject);
+    for (const msgPers &msgP:personalitzacions ) {
+        QStringList rcptStringList = msgP.destinartari.split(";");
+        //QString subject = msgP.assumpte;
+        //QString html = msgP.contingut;
 
-    for (int i = 0; i < rcptStringList.size(); ++i)
-         message.addRecipient(stringToEmail(rcptStringList.at(i)));
+        MimeMessage message;
 
-    MimeHtml content;
-    content.setHtml(html);
+        message.setSender(sender);
 
-    message.addPart(&content);
+        message.setSubject(msgP.assumpte);
 
-    QList<QFile*> files;
-    for (int i = 0; i < ui->attachments->count(); ++i)
-    {
-        QFile* file = new QFile(ui->attachments->item(i)->text());
-        files.append(file);
+        for (int i = 0; i < rcptStringList.size(); ++i)
+             message.addRecipient(stringToEmail(rcptStringList.at(i)));
 
-        MimeAttachment* attachment = new MimeAttachment(file);
+        MimeHtml content;
+        content.setHtml(msgP.contingut);
 
-        message.addPart(attachment, true);
-    }
+        message.addPart(&content);
 
-    smtp.connectToHost();
-    if (!smtp.waitForReadyConnected())
-    {
-        errorMessage("Connection Failed");
-        return;
-    }
-
-    if (auth)
-    {
-        smtp.login(user, password);
-        if (!smtp.waitForAuthenticated())
+        QList<QFile*> files;
+        for (int i = 0; i < ui->attachments->count(); ++i)
         {
-            errorMessage("Authentification Failed");
+            QFile* file = new QFile(ui->attachments->item(i)->text());
+            files.append(file);
+
+            MimeAttachment* attachment = new MimeAttachment(file);
+
+            message.addPart(attachment, true);
+        }
+
+        smtp.connectToHost();
+        if (!smtp.waitForReadyConnected())
+        {
+            errorMessage("Connection Failed");
             return;
         }
-    }
 
-    smtp.sendMail(message);
-    if (!smtp.waitForMailSent())
-    {
-        errorMessage("Mail sending failed");
-        return;
-    }
-    else
-    {
-        QMessageBox okMessage (this);
-        okMessage.setText("The email was succesfully sent.");
-        okMessage.exec();
-    }
+        if (auth)
+        {
+            smtp.login(user, password);
+            if (!smtp.waitForAuthenticated())
+            {
+                errorMessage("Authentification Failed");
+                return;
+            }
+        }
 
+        smtp.sendMail(message);
+        if (!smtp.waitForMailSent())
+        {
+            errorMessage("Mail sending failed");
+            return;
+        }
+        else
+        {
+            QMessageBox okMessage (this);
+            okMessage.setText("The email was succesfully sent.");
+            okMessage.exec();
+        }
+    }
     smtp.quit();
 
-    for (auto file : files) {
-        delete file;
-    }
+    // for (auto file : files) {
+    //     delete file;
+    // }
 }
 
 
